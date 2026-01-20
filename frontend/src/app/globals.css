@@ -1,0 +1,488 @@
+@import "tailwindcss";
+
+/* ===========================================
+   THE CURATOR'S GHOST - CSS VARIABLES
+   =========================================== */
+:root {
+  /* Color Palette - Antique & Mysterious */
+  --gold: #c9a227;
+  --gold-light: #e6c96b;
+  --gold-dark: #8b6914;
+  --bronze: #a67c52;
+  --sepia-dark: #1a0f0a;
+  --sepia-mid: #2d1f15;
+  --sepia-light: #4a3728;
+  --cream: #f5e6d3;
+  --cream-muted: rgba(245, 230, 211, 0.7);
+
+  /* Background */
+  --background: #0d0805;
+  --foreground: #e8e0d5;
+
+  /* Overlay */
+  --overlay-dark: rgba(10, 5, 2, 0.7);
+  --overlay-sepia: rgba(30, 20, 10, 0.5);
+}
+
+@theme inline {
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-dark: var(--gold-dark);
+  --color-bronze: var(--bronze);
+  --color-sepia-dark: var(--sepia-dark);
+  --color-sepia-mid: var(--sepia-mid);
+  --color-sepia-light: var(--sepia-light);
+  --color-cream: var(--cream);
+  --color-cream-muted: var(--cream-muted);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+/* ===========================================
+   BASE STYLES
+   =========================================== */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Playfair Display', Georgia, serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===========================================
+   HERO SECTION - LANDING PAGE
+   =========================================== */
+.hero-container {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Background Image - Local Museum Image */
+.hero-background {
+  position: absolute;
+  inset: 0;
+  background-color: #0d0805;
+  background-image: url('/museum-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+/* Dark Gradient Overlay */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+      rgba(0, 0, 0, 0.4) 0%,
+      rgba(10, 5, 2, 0.3) 40%,
+      rgba(10, 5, 2, 0.5) 100%);
+  z-index: 1;
+}
+
+/* Subtle Mist Effect */
+.hero-mist {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 70%, rgba(201, 162, 39, 0.02) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 30%, rgba(166, 124, 82, 0.03) 0%, transparent 50%);
+  animation: mistFloat 20s ease-in-out infinite;
+  z-index: 2;
+  pointer-events: none;
+}
+
+@keyframes mistFloat {
+
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: translateY(-15px);
+  }
+}
+
+/* ===========================================
+   LOGIN LINK - TOP RIGHT
+   =========================================== */
+.login-link {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  z-index: 20;
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  color: var(--cream-muted);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  transition: color 0.3s ease;
+}
+
+.login-link:hover {
+  color: var(--cream);
+}
+
+/* ===========================================
+   TYPOGRAPHY - MAIN TITLE
+   =========================================== */
+.hero-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.main-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.title-line {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  line-height: 1.1;
+
+  /* Stone/Cream Text */
+  color: var(--cream);
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(201, 162, 39, 0.1);
+}
+
+.title-line:first-child {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  margin-bottom: 0.5rem;
+}
+
+.title-line.title-large {
+  font-size: clamp(3rem, 10vw, 7rem);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+/* ===========================================
+   SUBTITLE
+   =========================================== */
+.subtitle {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--cream-muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 3rem;
+  animation: fadeIn 2s ease-out 0.5s forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===========================================
+   WAX SEAL BUTTON - IMAGE BASED
+   =========================================== */
+.seal-button {
+  position: relative;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: sealAppear 1.2s ease-out 0.8s forwards;
+  opacity: 0;
+}
+
+@keyframes sealAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.seal-image {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(201, 162, 39, 0.3));
+  transition: all 0.4s ease;
+}
+
+.seal-button:hover {
+  transform: scale(1.08);
+}
+
+.seal-button:hover .seal-image {
+  filter: drop-shadow(0 0 30px rgba(201, 162, 39, 0.5));
+}
+
+.seal-button:active {
+  transform: scale(0.98);
+}
+
+/* ===========================================
+   DECORATIVE STAR - BOTTOM RIGHT
+   =========================================== */
+.decorative-star {
+  position: absolute;
+  bottom: 2rem;
+  right: 3rem;
+  z-index: 10;
+  font-size: 1.5rem;
+  color: var(--cream-muted);
+  opacity: 0.6;
+  animation: starPulse 3s ease-in-out infinite;
+}
+
+@keyframes starPulse {
+
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+/* ===========================================
+   RESPONSIVE ADJUSTMENTS
+   =========================================== */
+@media (max-width: 768px) {
+  .seal-image {
+    width: 130px;
+    height: 130px;
+  }
+
+  .login-link {
+    top: 1rem;
+    right: 1rem;
+    font-size: 0.85rem;
+  }
+
+  .decorative-star {
+    bottom: 1rem;
+    right: 1.5rem;
+    font-size: 1.2rem;
+  }
+}
+
+/* ===========================================
+   GALLERY & DETAIL PAGE STYLES
+   =========================================== */
+.ghost-mist {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse at 20% 80%, rgba(139, 115, 85, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(201, 169, 98, 0.03) 0%, transparent 50%);
+  animation: mistFloat 20s ease-in-out infinite;
+}
+
+.typewriter {
+  overflow: hidden;
+  border-right: 2px solid var(--gold);
+  animation: blink 0.75s step-end infinite;
+}
+
+@keyframes blink {
+
+  from,
+  to {
+    border-color: transparent;
+  }
+
+  50% {
+    border-color: var(--gold);
+  }
+}
+
+.ghost-panel {
+  background: linear-gradient(135deg, rgba(26, 15, 10, 0.95) 0%, rgba(20, 12, 8, 0.98) 100%);
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  box-shadow:
+    0 0 40px rgba(201, 162, 39, 0.05),
+    inset 0 0 60px rgba(200, 195, 185, 0.02);
+}
+
+.artwork-card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.artwork-card:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(201, 162, 39, 0.1);
+}
+
+.ghost-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.ghost-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.ghost-button:hover::before {
+  left: 100%;
+}
+
+.ghost-button:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 20px rgba(201, 162, 39, 0.2);
+}
+
+.ghost-spinner {
+  animation: spin 2s linear infinite, pulse 2s ease-in-out infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: reveal 0.6s ease forwards;
+}
+
+@keyframes reveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===========================================
+   VIBE SELECTION PAGE
+   =========================================== */
+.select-title {
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+}
+
+.frame-card {
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: frameReveal 0.8s ease forwards;
+  transition: transform 0.4s ease;
+}
+
+.frame-card:hover {
+  transform: translateY(-10px) scale(1.02);
+}
+
+@keyframes frameReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.frame-image-wrapper {
+  position: relative;
+  width: 280px;
+  height: 320px;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .frame-image-wrapper {
+    width: 240px;
+    height: 280px;
+  }
+}
+
+.frame-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.5s ease;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+}
+
+.frame-card:hover .frame-image {
+  transform: scale(1.03);
+}
+
+.frame-glow {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(ellipse at center, rgba(201, 162, 39, 0.2) 0%, transparent 70%);
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.frame-card:hover .frame-glow {
+  opacity: 1;
+}
