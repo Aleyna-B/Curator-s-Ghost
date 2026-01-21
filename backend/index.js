@@ -99,26 +99,94 @@ app.get('/api/artworks/:id', async (req, res) => {
     }
 });
 
-// POST /api/critique - Ghost yorumu (Mock versiyon - API key olmadan çalışır)
+// POST /api/critique - Ghost Critique & Spectral Secrets
 app.post('/api/critique', async (req, res) => {
     try {
         const { artworkId, persona } = req.body;
 
-        // Eser bilgisini al
+        // Fetch artwork data
         const objRes = await axios.get(`${MET_API}/objects/${artworkId}`);
         const artwork = objRes.data;
+        const artist = artwork.artistDisplayName || 'Unknown Artist';
+        const title = artwork.title || 'Untitled';
 
-        // Mock critique - API key olunca gerçek AI ile değiştirilecek
-        const mockCritiques = {
-            renaissance: `Ah, "${artwork.title}" speaks to the divine perfection sought by the masters. The composition reveals a soul yearning for harmony between earthly beauty and celestial truth.`,
-            impressionism: `In "${artwork.title}", one sees the fleeting dance of light upon form. The artist captures not mere reality, but the very essence of a moment suspended in time.`,
-            victorian_critic: `"${artwork.title}" demonstrates considerable technical merit, though one must question whether it achieves the moral elevation expected of true art. The execution is... adequate.`
+        // Helper to generate random position
+        const randPos = () => Math.floor(Math.random() * 60) + 20 + '%'; // 20-80%
+
+        // MOCK DATA (Fallback with Random Positions)
+        const mockResponse = {
+            critique: `Ah, "${title}" speaks to us across the ages. The artist, ${artist}, has captured a moment of stillness that defies the chaos of their time.`,
+            quickInsight: `A compelling work from ${artwork.objectDate || 'the past'} that rewards careful contemplation.`,
+            secrets: [
+                { top: randPos(), left: randPos(), text: "A hidden signature lies beneath the varnish." },
+                { top: randPos(), left: randPos(), text: "X-ray reveals a previous composition here." },
+                { top: randPos(), left: randPos(), text: "The light source here defies natural laws." }
+            ]
         };
 
-        res.json({
-            critique: mockCritiques[persona] || mockCritiques.victorian_critic,
-            quickInsight: `A compelling work by ${artwork.artistDisplayName || 'an unknown master'} that rewards careful contemplation.`
+        // If no AI client, return mock
+        if (!client) {
+            console.log("Using mock critique (No API Key)");
+            return res.json(mockResponse);
+        }
+
+        // AI PROMPT
+        const systemPrompt = `You are a Ghost Curator. 
+        Analyze the artwork "${title}" by ${artist} (${artwork.objectDate}, ${artwork.medium}).
+        
+        Persona: ${persona} (renaissance=poetic/scholarly, impressionism=dreamy/light-focused, victorian_critic=stern/technical).
+        
+        Output valid JSON only:
+        {
+          "critique": "text",
+          "quickInsight": "text",
+          "secrets": [
+            { "text": "Short detail", "top": "50%", "left": "50%" }
+          ]
+        }
+        Generate exactly 3 secrets with random coordinates (e.g. "45%").
+        If you cannot find specific secrets, invent mysterious technical details or artistic observations.`;
+
+        const response = await client.chat.completions.create({
+            model: "meta-llama/Llama-3.3-70B-Instruct",
+            messages: [
+                { role: "system", content: "You are a JSON-generating backend for an art app. Output ONLY JSON." },
+                { role: "user", content: systemPrompt }
+            ],
+            temperature: 0.7,
+            max_completion_tokens: 1000,
+            response_format: { type: "json_object" }
         });
+
+        // Parse JSON
+        const rawContent = response.choices[0].message.content;
+        console.log("🤖 Raw AI Response:", rawContent);
+
+        let aiData;
+        try {
+            if (!rawContent) throw new Error("Empty response from AI");
+
+            // Robust JSON extraction: Find the first '{' and last '}'
+            const jsonStart = rawContent.indexOf('{');
+            const jsonEnd = rawContent.lastIndexOf('}');
+
+            if (jsonStart !== -1 && jsonEnd !== -1) {
+                const jsonString = rawContent.substring(jsonStart, jsonEnd + 1);
+                aiData = JSON.parse(jsonString);
+            } else {
+                // Fallback: Try cleaning markdown code blocks
+                const cleanContent = rawContent.replace(/```json/g, '').replace(/```/g, '').trim();
+                aiData = JSON.parse(cleanContent);
+            }
+
+        } catch (e) {
+            console.error("Failed to parse AI JSON. Error:", e.message);
+            console.error("Raw Content was:", rawContent); // Log the actual content causing error
+            return res.json(mockResponse); // Fallback if JSON fails
+        }
+
+        console.log("✅ Parsed AI Data:", aiData);
+        res.json(aiData);
 
     } catch (error) {
         console.error('Critique error:', error.message);

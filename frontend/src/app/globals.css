@@ -706,3 +706,169 @@ body {
   color: var(--background);
   box-shadow: 0 0 20px rgba(201, 162, 39, 0.3);
 }
+
+/* ===========================================
+   SPECTRAL VISION LIGHTBOX 👁️
+   =========================================== */
+
+/* Main Container (Full Screen Overlay) */
+.spectral-lightbox-container {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  /* Top level */
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Image Wrapper (Holds Image + Hotspots) */
+.spectral-lightbox-image-wrapper {
+  position: relative;
+  max-width: 90vw;
+  max-height: 80vh;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+  animation: zoomIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* The Image Itself */
+.spectral-image {
+  display: block;
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 4px;
+  /* Glow Effect */
+  box-shadow: 0 0 30px rgba(100, 200, 255, 0.2);
+}
+
+/* Hint Text below lightbox */
+.spectral-lightbox-hint {
+  margin-top: 1.5rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.1em;
+  font-size: 0.9rem;
+}
+
+/* Hotspots (Positioned relative to wrapper) */
+.spectral-lightbox-image-wrapper .ghost-hotspot {
+  /* Inherit previous hotspot styles but ensure z-index */
+  z-index: 10000;
+}
+
+/* ===========================================
+   GHOST HOTSPOT STYLES (Restored) 👻
+   =========================================== */
+
+.ghost-hotspot {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 100, 200, 0.9);
+  /* Pink/Red for visibility */
+  background: rgba(255, 100, 200, 0.3);
+  cursor: help;
+  transform: translate(-50%, -50%);
+  /* Centering on coordinate */
+  box-shadow: 0 0 25px rgba(255, 100, 200, 0.8);
+  pointer-events: auto;
+  opacity: 1;
+  /* Always visible in lightbox */
+}
+
+/* Pulse animation */
+.ghost-hotspot::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 100, 200, 0.5);
+  animation: hotspotPulse 2s infinite;
+}
+
+@keyframes hotspotPulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* Tooltip for the secret */
+.ghost-tooltip {
+  position: absolute;
+  bottom: 150%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  width: 220px;
+  background: rgba(0, 0, 0, 0.95);
+  color: #ffccff;
+  /* Pinkish text */
+  border: 1px solid rgba(255, 100, 200, 0.5);
+  padding: 1rem;
+  border-radius: 8px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  z-index: 20000;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.8);
+}
+
+.ghost-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -6px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: rgba(255, 100, 200, 0.5) transparent transparent transparent;
+}
+
+.ghost-hotspot:hover .ghost-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Cleanup old styles if necessary */
+.spectral-overlay,
+.spectral-mode-active body {
+  /* Can be kept or removed if unused */
+  overflow: hidden;
+}
