@@ -116,13 +116,11 @@ function ArtworkContent({ params }) {
                     {/* Artwork Image */}
                     <section className="reveal">
                         <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-muted/30 border border-ghost">
-                            <Image
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
                                 src={artwork?.imageUrl || "/placeholder-art.jpg"}
                                 alt={artwork?.title || "Artwork"}
-                                fill
-                                className="object-cover"
-                                priority
-                                sizes="(max-width: 1024px) 100vw, 50vw"
+                                className="w-full h-full object-cover"
                             />
                         </div>
 
@@ -153,6 +151,14 @@ function ArtworkContent({ params }) {
                             isLoading={isLoadingCritique}
                             error={error}
                         />
+
+                        {/* Chat with Ghost Button */}
+                        <a
+                            href={`/chat?persona=${vibe}&artworkId=${id}&title=${encodeURIComponent(artwork?.title || '')}&artist=${encodeURIComponent(artwork?.artist || '')}`}
+                            className="chat-with-ghost-btn"
+                        >
+                            💬 Chat with the Ghost
+                        </a>
                     </section>
                 </div>
             </div>

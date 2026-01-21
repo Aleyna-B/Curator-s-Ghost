@@ -486,3 +486,223 @@ body {
 .frame-card:hover .frame-glow {
   opacity: 1;
 }
+
+/* ===========================================
+   CHAT PAGE STYLES
+   =========================================== */
+.chat-container {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+  background: rgba(13, 8, 5, 0.9);
+}
+
+.back-link {
+  color: var(--cream-muted);
+  text-decoration: none;
+  font-family: 'Playfair Display', serif;
+  transition: color 0.3s;
+}
+
+.back-link:hover {
+  color: var(--cream);
+}
+
+.chat-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.messages-container {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.message {
+  display: flex;
+  gap: 0.75rem;
+  max-width: 80%;
+  animation: messageReveal 0.3s ease;
+}
+
+@keyframes messageReveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.message-ghost {
+  align-self: flex-start;
+}
+
+.message-avatar {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.message-content {
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  font-family: 'Playfair Display', serif;
+  line-height: 1.6;
+}
+
+.message-user .message-content {
+  background: rgba(201, 162, 39, 0.2);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  color: var(--cream);
+  border-bottom-right-radius: 0.25rem;
+}
+
+.message-ghost .message-content {
+  background: rgba(26, 15, 10, 0.95);
+  border: 1px solid rgba(201, 162, 39, 0.15);
+  color: var(--cream-muted);
+  border-bottom-left-radius: 0.25rem;
+}
+
+/* Typing indicator */
+.message-content.typing {
+  display: flex;
+  gap: 0.3rem;
+  padding: 1rem 1.25rem;
+}
+
+.message-content.typing span {
+  width: 8px;
+  height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: typingBounce 1.4s ease-in-out infinite;
+}
+
+.message-content.typing span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.message-content.typing span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typingBounce {
+
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+
+  30% {
+    transform: translateY(-8px);
+    opacity: 1;
+  }
+}
+
+.chat-input-form {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid rgba(201, 162, 39, 0.2);
+  background: rgba(13, 8, 5, 0.95);
+}
+
+.chat-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  background: rgba(26, 15, 10, 0.8);
+  color: var(--cream);
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.chat-input::placeholder {
+  color: var(--cream-muted);
+  opacity: 0.6;
+}
+
+.chat-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 15px rgba(201, 162, 39, 0.15);
+}
+
+.chat-send-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.chat-send-btn:hover:not(:disabled) {
+  background: var(--gold);
+  color: var(--background);
+}
+
+.chat-send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Chat with Ghost Button on Artwork Page */
+.chat-with-ghost-btn {
+  display: block;
+  margin-top: 1.5rem;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  border: 1px solid var(--gold);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  transition: all 0.3s;
+}
+
+.chat-with-ghost-btn:hover {
+  background: var(--gold);
+  color: var(--background);
+  box-shadow: 0 0 20px rgba(201, 162, 39, 0.3);
+}
