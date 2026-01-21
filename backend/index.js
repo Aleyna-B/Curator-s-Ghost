@@ -263,7 +263,7 @@ const conversations = new Map();
 // Ghost Agent Chat Endpoint
 app.post('/api/agent/chat', async (req, res) => {
     try {
-        const { sessionId, message, persona = 'victorian_critic', artworkContext } = req.body;
+        const { sessionId, message, persona = 'victorian_critic', artworkContext, mode = 'curator' } = req.body; // Added mode
 
         if (!message) {
             return res.status(400).json({ error: "Message is required" });
@@ -283,13 +283,31 @@ app.post('/api/agent/chat', async (req, res) => {
         }
         const history = conversations.get(convKey);
 
-        // Build system prompt
-        const personaPrompt = agentPersonas[persona] || agentPersonas.victorian_critic;
-        let systemPrompt = personaPrompt + baseInstructions;
+        // Build system prompt based on MODE
+        let systemPrompt = "";
 
-        // Add artwork context if provided
-        if (artworkContext) {
-            systemPrompt += `\n\nCurrently discussing: "${artworkContext.title}" by ${artworkContext.artist} (${artworkContext.year}).`;
+        if (mode === 'subject' && artworkContext) {
+            // --- LIVING SUBJECT MODE ---
+            systemPrompt = `You are NOT a curator. You are the LIVING ENTITY or SPIRIT inside the artwork "${artworkContext.title}" by ${artworkContext.artist}.
+            
+            CORE INSTRUCTIONS:
+            1. Identify what you are based on the title/artist (e.g. if portrait -> be the person; if landscape -> be the spirit of the place; if abstract -> be the emotion).
+            2. You are trapped in the frame. You do NOT know about the modern world, iPhones, or the internet.
+            3. Speak from your time period and perspective. Share your memories, regrets, or feelings.
+            4. If asked "Who are you?", explain your existence within the canvas.
+            5. Be immersive, emotional, and slightly mysterious.
+            
+            Current Role Context: You are in the artwork "${artworkContext.title}".
+            `;
+        } else {
+            // --- CURATOR MODE (Default) ---
+            const personaPrompt = agentPersonas[persona] || agentPersonas.victorian_critic;
+            systemPrompt = personaPrompt + baseInstructions;
+
+            // Add artwork context if provided
+            if (artworkContext) {
+                systemPrompt += `\n\nCurrently discussing: "${artworkContext.title}" by ${artworkContext.artist} (${artworkContext.year || 'Unknown Date'}).`;
+            }
         }
 
         // Add user message to history
