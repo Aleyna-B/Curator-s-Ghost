@@ -65,17 +65,28 @@ function ChatContent() {
 
         window.speechSynthesis.cancel(); // Stop conflicting audio
 
-        const utterance = new SpeechSynthesisUtterance(text);
+        // Clean text: Remove content in parentheses (e.g., narrative descriptions)
+        const cleanText = text.replace(/\([^)]*\)/g, "").trim();
+        if (!cleanText) return; // Don't speak if nothing remains
+
+        const utterance = new SpeechSynthesisUtterance(cleanText);
 
         // Select Voice
         const selectedVoice = voices.find(v => v.name.includes("Google UK English Male"))
             || voices.find(v => v.name.includes("Male"))
             || voices[0];
 
-        // Voice Modulation based on Persona/Mode
-        if (currentMode === 'subject') {
-            utterance.pitch = 0.5; // Very deep, ghostly
-            utterance.rate = 0.85; // Slow and deliberate
+        // "Possessed" Trigger Words
+        const triggerWords = ["death", "blood", "darkness", "eternal", "spirit", "doom", "curse", "shadow", "fear", "void", "grave", "mourn", "died", "kill", "ghost", "haunt"];
+        const isPossessed = triggerWords.some(word => text.toLowerCase().includes(word));
+
+        // Voice Modulation based on Persona/Mode/Content
+        if (isPossessed) {
+            utterance.pitch = 0.4; // Dark but audible (was 0.2)
+            utterance.rate = 0.8;  // Slow
+        } else if (currentMode === 'subject') {
+            utterance.pitch = 0.7; // Mysterious but clearer (was 0.5)
+            utterance.rate = 0.9;
         } else if (currentPersona === 'renaissance') {
             utterance.pitch = 1.0;
             utterance.rate = 0.9; // Poetic
@@ -106,6 +117,9 @@ function ChatContent() {
 
     // Initial Greeting
     useEffect(() => {
+        // Prevent resetting if messages already exist (Fix for re-render bug)
+        if (messages.length > 0) return;
+
         let greeting = "";
         if (mode === 'subject') {
             greeting = `(A voice echoes from within the frame of "${artworkTitle || 'the artwork'}") ... Who disturbs my eternal rest? Speak.`;
@@ -214,7 +228,7 @@ function ChatContent() {
                             <button
                                 onClick={() => {
                                     speakText(msg.content, persona, mode);
-                                    setIsSpeaking(true);
+                                    setIsSpeaking(true); // Enable auto-speak
                                 }}
                                 className="message-avatar text-2xl hover:scale-110 transition-transform cursor-pointer self-start mt-1"
                                 title="Replay Voice"

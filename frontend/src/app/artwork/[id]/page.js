@@ -238,14 +238,14 @@ function ArtworkContent({ params }) {
                                 href={`/chat?persona=${vibe}&artworkId=${id}&title=${encodeURIComponent(artwork?.title || '')}&artist=${encodeURIComponent(artwork?.artist || '')}`}
                                 className="chat-with-ghost-btn"
                             >
-                                💬 Chat with the Ghost Curator
+                                Chat with the Ghost Curator
                             </a>
 
                             <a
                                 href={`/chat?mode=subject&persona=${vibe}&artworkId=${id}&title=${encodeURIComponent(artwork?.title || '')}&artist=${encodeURIComponent(artwork?.artist || '')}`}
                                 className="chat-with-ghost-btn bg-transparent border-2 border-primary/50 text-white hover:bg-primary/10 hover:border-primary transition-all shadow-[0_0_15px_rgba(100,200,255,0.1)] hover:shadow-[0_0_25px_rgba(100,200,255,0.3)]"
                             >
-                                👁️ Speak to the Painting
+                                Speak to the Painting
                             </a>
                         </div>
                     </section>
