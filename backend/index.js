@@ -32,6 +32,63 @@ const vibeConfig = {
     victorian_critic: { q: 'portrait 19th century', departmentId: 11 }
 };
 
+// ============================================
+// ORCHESTRATOR AGENT (io.net Reasoning Agent)
+// ============================================
+
+/**
+ * Uses io.net's reasoning_agent to classify
+ * a follow-up question about an artwork.
+ *
+ * This is a TRUE agent call, not a chat completion.
+ */
+async function orchestratorAgent({ message }) {
+    const payload = {
+        objective: `
+A user is asking a follow-up question about a painting in a museum.
+
+Classify the question into:
+- intent: expand | historical | critique | comparison
+- focus: technique | symbolism | historical_context | artist_influence | general
+
+User question:
+"${message}"
+
+Return ONLY valid JSON.
+`,
+        agent_names: ["reasoning_agent"],
+        args: {
+            type: "solve_with_reasoning",
+            name: "reasoning_agent",
+            objective:
+                "A logic-driven problem solver that breaks down complex scenarios into clear, step-by-step conclusions.",
+            instructions:
+                "Break down the user's question and return a structured classification."
+        }
+    };
+
+    const response = await axios.post(
+        "https://api.intelligence.io.solutions/api/v1/workflows/run",
+        payload,
+        {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${process.env.IOINTELLIGENCE_API_KEY}`
+            }
+        }
+    );
+
+    /**
+     * io.net agent responses are usually nested.
+     * We extract the final reasoning output here.
+     */
+    const agentOutput =
+        response.data?.result ||
+        response.data?.outputs?.[0]?.content;
+
+    return JSON.parse(agentOutput);
+}
+
 // GET /api/artworks - Eser listesi
 app.get('/api/artworks', async (req, res) => {
     try {
@@ -245,6 +302,21 @@ app.post('/api/agent/chat', async (req, res) => {
             });
         }
 
+        // -----------------------------
+        // ORCHESTRATOR AGENT (io.net)
+        // Only run in curator mode, not subject mode
+        // -----------------------------
+        let plan = null;
+        if (mode !== 'subject') {
+            try {
+                plan = await orchestratorAgent({ message });
+                console.log(" Orchestrator Plan:", plan);
+            } catch (error) {
+                console.warn(" Orchestrator failed, proceeding without plan:", error.message);
+                // Continue without plan - curator can still respond
+            }
+        }
+
         // Get or create conversation history
         const convKey = sessionId || `session_${Date.now()}`;
         if (!conversations.has(convKey)) {
@@ -271,7 +343,20 @@ app.post('/api/agent/chat', async (req, res) => {
         } else {
             // --- CURATOR MODE (Default) ---
             const personaPrompt = agentPersonas[persona] || agentPersonas.victorian_critic;
-            systemPrompt = personaPrompt + baseInstructions;
+            systemPrompt = `${personaPrompt}\n${baseInstructions}`;
+
+            // Add orchestrator strategy if available
+            if (plan && plan.intent && plan.focus) {
+                systemPrompt += `
+
+The user is asking a follow-up question about the artwork.
+Response strategy:
+- Intent: ${plan.intent}
+- Focus: ${plan.focus}
+
+Stay fully in character and adapt your response accordingly.
+`;
+            }
 
             // Add artwork context if provided
             if (artworkContext) {
