@@ -164,15 +164,17 @@ function ArtworkContent({ params }) {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
                     {/* Artwork Image */}
                     <section className="reveal">
-                        <div className="artwork-image-container relative aspect-[3/4] rounded-xl overflow-hidden bg-muted/30 border border-ghost">
+                        <div className="artwork-image-container group relative aspect-[3/4] rounded-xl overflow-hidden bg-muted/30 border border-ghost">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={artwork?.imageUrl || "/placeholder-art.jpg"}
                                 alt={artwork?.title || "Artwork"}
                                 className="w-full h-full object-cover"
                             />
-                            <div className="spectral-hint">
-                                PRESS SPACE TO ENTER THE VOID
+                            <div className="spectral-hint text-center w-full absolute bottom-4 left-0 right-0 pointer-events-none">
+                                <p className="text-secondary/40 font-serif tracking-widest text-sm animate-pulse shadow-black drop-shadow-md">
+                                    Hold [SPACE] to reveal the unseen...
+                                </p>
                             </div>
                         </div>
 
