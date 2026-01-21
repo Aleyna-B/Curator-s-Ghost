@@ -195,37 +195,6 @@ app.post('/api/critique', async (req, res) => {
 });
 
 // ============================================
-// EXISTING CHAT ENDPOINT
-// ============================================
-app.post('/api/chat', async (req, res) => {
-    try {
-        // 1. Get data from the frontend request
-        // Expecting { messages: [...] } from the React app
-        const { messages } = req.body;
-
-        if (!messages || !Array.isArray(messages)) {
-            return res.status(400).json({ error: "Invalid messages format" });
-        }
-
-        // 2. Call IO Intelligence
-        const response = await client.chat.completions.create({
-            model: "meta-llama/Llama-3.3-70B-Instruct", // Or your preferred model
-            messages: messages, // Pass the conversation history
-            temperature: 0.7,
-            max_completion_tokens: 200 // Increased slightly for art descriptions
-        });
-
-        // 3. Send the answer back to the frontend
-        const botReply = response.choices[0].message.content;
-        res.json({ reply: botReply });
-
-    } catch (error) {
-        console.error("Error calling IO Intelligence:", error);
-        res.status(500).json({ error: "Failed to fetch response from Ghost" });
-    }
-});
-
-// ============================================
 // GHOST AGENT - CONVERSATIONAL AI
 // ============================================
 
@@ -327,7 +296,9 @@ app.post('/api/agent/chat', async (req, res) => {
             max_completion_tokens: 300
         });
 
-        const reply = response.choices[0].message.content;
+        const rawReply = response.choices[0].message.content;
+        console.log("👻 Raw AI Response:", rawReply);
+        const reply = (rawReply || "").trim();
 
         // Add assistant reply to history
         history.push({ role: "assistant", content: reply });

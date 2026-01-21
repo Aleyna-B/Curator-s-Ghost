@@ -159,7 +159,29 @@ function ChatContent() {
 
             const data = await response.json();
             if (data.sessionId) setSessionId(data.sessionId);
-            setMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
+
+            // Clean up common AI artifacts
+            let cleanReply = data.reply || "";
+
+            // Remove "undefined" from end
+            cleanReply = cleanReply.replace(/undefined$/i, "").trim();
+
+            // Fix common truncated starts (AI sometimes drops first letter)
+            const truncationFixes = [
+                { pattern: /^n this\b/i, replacement: "In this" },
+                { pattern: /^t is\b/i, replacement: "It is" },
+                { pattern: /^he /i, replacement: "The " },
+                { pattern: /^his /i, replacement: "This " },
+            ];
+
+            for (const fix of truncationFixes) {
+                if (fix.pattern.test(cleanReply)) {
+                    cleanReply = cleanReply.replace(fix.pattern, fix.replacement);
+                    break;
+                }
+            }
+
+            setMessages(prev => [...prev, { role: "assistant", content: cleanReply }]);
         } catch (error) {
             setMessages(prev => [...prev, { role: "assistant", content: "The spirits are disturbed... Please try again." }]);
         } finally {

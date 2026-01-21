@@ -105,8 +105,27 @@ function ArtworkContent({ params }) {
                 if (!response.ok) throw new Error("The ghost remains silent...");
 
                 const data = await response.json();
-                setCritique(data.critique);
-                setQuickInsight(data.quickInsight);
+
+                // Clean up AI text artifacts
+                let cleanCritique = (data.critique || "").replace(/undefined$/i, "").trim();
+                let cleanInsight = (data.quickInsight || "").replace(/undefined$/i, "").trim();
+
+                // Fix truncated starts
+                const fixes = [
+                    { pattern: /^n /i, replacement: "In " },
+                    { pattern: /^n'/i, replacement: "In'" },
+                    { pattern: /^t is\b/i, replacement: "It is" },
+                    { pattern: /^he /i, replacement: "The " },
+                ];
+                for (const fix of fixes) {
+                    if (fix.pattern.test(cleanCritique)) {
+                        cleanCritique = cleanCritique.replace(fix.pattern, fix.replacement);
+                        break;
+                    }
+                }
+
+                setCritique(cleanCritique);
+                setQuickInsight(cleanInsight);
 
                 // Set AI-generated secrets (or fallback to empty if missing)
                 if (data.secrets && Array.isArray(data.secrets)) {
