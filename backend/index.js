@@ -32,6 +32,63 @@ const vibeConfig = {
     victorian_critic: { q: 'portrait 19th century', departmentId: 11 }
 };
 
+// ============================================
+// ORCHESTRATOR AGENT (io.net Reasoning Agent)
+// ============================================
+
+/**
+ * Uses io.net's reasoning_agent to classify
+ * a follow-up question about an artwork.
+ *
+ * This is a TRUE agent call, not a chat completion.
+ */
+async function orchestratorAgent({ message }) {
+    const payload = {
+        objective: `
+A user is asking a follow-up question about a painting in a museum.
+
+Classify the question into:
+- intent: expand | historical | critique | comparison
+- focus: technique | symbolism | historical_context | artist_influence | general
+
+User question:
+"${message}"
+
+Return ONLY valid JSON.
+`,
+        agent_names: ["reasoning_agent"],
+        args: {
+            type: "solve_with_reasoning",
+            name: "reasoning_agent",
+            objective:
+                "A logic-driven problem solver that breaks down complex scenarios into clear, step-by-step conclusions.",
+            instructions:
+                "Break down the user's question and return a structured classification."
+        }
+    };
+
+    const response = await axios.post(
+        "https://api.intelligence.io.solutions/api/v1/workflows/run",
+        payload,
+        {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${process.env.IOINTELLIGENCE_API_KEY}`
+            }
+        }
+    );
+
+    /**
+     * io.net agent responses are usually nested.
+     * We extract the final reasoning output here.
+     */
+    const agentOutput =
+        response.data?.result ||
+        response.data?.outputs?.[0]?.content;
+
+    return JSON.parse(agentOutput);
+}
+
 // GET /api/artworks - Eser listesi
 app.get('/api/artworks', async (req, res) => {
     try {
@@ -196,34 +253,8 @@ app.post('/api/critique', async (req, res) => {
 
 // ============================================
 // EXISTING CHAT ENDPOINT
-// ============================================
-app.post('/api/chat', async (req, res) => {
-    try {
-        // 1. Get data from the frontend request
-        // Expecting { messages: [...] } from the React app
-        const { messages } = req.body;
+// redundant function deleted
 
-        if (!messages || !Array.isArray(messages)) {
-            return res.status(400).json({ error: "Invalid messages format" });
-        }
-
-        // 2. Call IO Intelligence
-        const response = await client.chat.completions.create({
-            model: "meta-llama/Llama-3.3-70B-Instruct", // Or your preferred model
-            messages: messages, // Pass the conversation history
-            temperature: 0.7,
-            max_completion_tokens: 200 // Increased slightly for art descriptions
-        });
-
-        // 3. Send the answer back to the frontend
-        const botReply = response.choices[0].message.content;
-        res.json({ reply: botReply });
-
-    } catch (error) {
-        console.error("Error calling IO Intelligence:", error);
-        res.status(500).json({ error: "Failed to fetch response from Ghost" });
-    }
-});
 
 // ============================================
 // GHOST AGENT - CONVERSATIONAL AI
@@ -276,6 +307,20 @@ app.post('/api/agent/chat', async (req, res) => {
             });
         }
 
+        // -----------------------------
+        // ORCHESTRATOR AGENT (io.net)
+        // -----------------------------
+        const plan = await orchestratorAgent({ message });
+
+        console.log("🧠 Orchestrator Plan:", plan);
+        /*
+        Example:
+        {
+          intent: "historical",
+          focus: "artist_influence"
+        }
+        */
+
         // Get or create conversation history
         const convKey = sessionId || `session_${Date.now()}`;
         if (!conversations.has(convKey)) {
@@ -285,7 +330,17 @@ app.post('/api/agent/chat', async (req, res) => {
 
         // Build system prompt
         const personaPrompt = agentPersonas[persona] || agentPersonas.victorian_critic;
-        let systemPrompt = personaPrompt + baseInstructions;
+        let systemPrompt = `
+${personaPrompt}
+${baseInstructions}
+
+The user is asking a follow-up question about the artwork.
+Response strategy:
+- Intent: ${plan.intent}
+- Focus: ${plan.focus}
+
+Adapt your response accordingly while staying fully in character.
+`;
 
         // Add artwork context if provided
         if (artworkContext) {
