@@ -18,6 +18,13 @@ cd Curator-s-Ghost
 
 ### Running the Application
 
+## 📝 Environment Variables
+
+Create `.env.local` in root directory:
+```
+IOINTELLIGENCE_API_KEY=your_api_key_here
+```
+
 **1️⃣ Start Backend (Terminal 1)**
 ```bash
 cd backend
@@ -60,14 +67,26 @@ http://localhost:3000
 ```
 Curator-s-Ghost/
 ├── backend/
-│   ├── index.js          # Express server + API endpoints
-│   ├── config/           # CORS configuration
+│   ├── index.js                    # Server entry point
+│   ├── config/
+│   │   └── corsConfig.js           # CORS middleware
+│   ├── components/
+│   │   ├── ghostController.js      # AI & critique routes
+│   │   ├── museumController.js     # Met Museum API integration
+│   │   ├── orchestraAgent.js       # Intent planning agent
+│   │   └── personaPrompts.js       # Character personas & instructions
+│   │   └── jsonParser.js           # JSON extraction & cleanup
 │   └── package.json
 ├── frontend/
 │   ├── src/
-│   │   ├── app/          # Next.js pages
-│   │   └── components/   # React components
-│   ├── public/           # Static assets
+│   │   ├── app/
+│   │   │   ├── page.js             # Landing page
+│   │   │   ├── select/             # Era selection
+│   │   │   ├── gallery/            # Browse artworks
+│   │   │   ├── artwork/[id]/       # Artwork detail + critique
+│   │   │   └── chat/               # Chat with curator/spirit
+│   │   └── components/             # Reusable React components
+│   ├── public/                     # Static assets
 │   └── package.json
 └── README.md
 ```
@@ -78,15 +97,23 @@ Curator-s-Ghost/
 |--------|----------|-------------|
 | GET | `/api/artworks?vibe={vibe}` | Get artworks by era |
 | GET | `/api/artworks/:id` | Get single artwork details |
-| POST | `/api/critique` | Get ghost critique for artwork |
+| POST | `/api/critique` | Get ghost critique + spectral secrets |
+| POST | `/api/agent/chat` | Conversational AI with persona |
 
-## 📝 Environment Variables
+## 🎭 AI Modes
 
-Create `.env.local` in root directory:
-```
-IOINTELLIGENCE_API_KEY=your_api_key_here
-```
+### Curator Mode
+Interact with historical personas who critique and discuss artworks:
+- **Renaissance** (Lorenzo) - Poetic, scholarly perspective
+- **Impressionism** (Claude) - Dreamy, light-focused observations
+- **Victorian Critic** (Edmund) - Stern, technical analysis
+
+### Subject Mode
+Talk directly to the **spirit** of the artwork itself - immersive roleplay where the artwork becomes a character sharing its own story.
+
+### TTS Option
+Interract through chatting or talking!
 
 ---
 
-Built for hackathon 🏆
+Built for io.net hackathon 🏆
