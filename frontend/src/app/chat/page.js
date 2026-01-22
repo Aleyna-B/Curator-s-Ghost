@@ -23,18 +23,21 @@ function ChatContent() {
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [voices, setVoices] = useState([]);
 
+    // Debate States
+    const [isDebating, setIsDebating] = useState(false);
+    const [debateMessages, setDebateMessages] = useState([]);
+    const [isTyping, setIsTyping] = useState(false);
+    const [typingSpeaker, setTypingSpeaker] = useState(null);
+
     const personaNames = {
         renaissance: "Lorenzo",
         impressionism: "Claude",
         victorian_critic: "Edmund"
     };
 
-
-
     // Load TTS Voices & Cleanup
     useEffect(() => {
         const loadVoices = () => {
-            // Check if window is defined (client-side)
             if (typeof window !== "undefined" && window.speechSynthesis) {
                 const available = window.speechSynthesis.getVoices();
                 setVoices(available);
@@ -47,7 +50,6 @@ function ChatContent() {
             window.speechSynthesis.onvoiceschanged = loadVoices;
         }
 
-        // Cleanup: Stop speaking explicitly when unmounting
         return () => {
             if (typeof window !== "undefined" && window.speechSynthesis) {
                 window.speechSynthesis.cancel();
@@ -55,40 +57,32 @@ function ChatContent() {
         };
     }, []);
 
-    // Speak Text Function
     const speakText = (text, currentPersona, currentMode) => {
         if (typeof window === "undefined" || !window.speechSynthesis) return;
-
-        window.speechSynthesis.cancel(); // Stop conflicting audio
-
-        // Clean text: Remove content in parentheses (e.g., narrative descriptions)
+        window.speechSynthesis.cancel();
         const cleanText = text.replace(/\([^)]*\)/g, "").trim();
-        if (!cleanText) return; // Don't speak if nothing remains
+        if (!cleanText) return;
 
         const utterance = new SpeechSynthesisUtterance(cleanText);
-
-        // Select Voice
         const selectedVoice = voices.find(v => v.name.includes("Google UK English Male"))
             || voices.find(v => v.name.includes("Male"))
             || voices[0];
 
-        // "Possessed" Trigger Words
         const triggerWords = ["death", "blood", "darkness", "eternal", "spirit", "doom", "curse", "shadow", "fear", "void", "grave", "mourn", "died", "kill", "ghost", "haunt"];
         const isPossessed = triggerWords.some(word => text.toLowerCase().includes(word));
 
-        // Voice Modulation based on Persona/Mode/Content
         if (isPossessed) {
-            utterance.pitch = 0.4; // Dark but audible (was 0.2)
-            utterance.rate = 0.8;  // Slow
+            utterance.pitch = 0.4;
+            utterance.rate = 0.8;
         } else if (currentMode === 'subject') {
-            utterance.pitch = 0.7; // Mysterious but clearer (was 0.5)
+            utterance.pitch = 0.7;
             utterance.rate = 0.9;
         } else if (currentPersona === 'renaissance') {
             utterance.pitch = 1.0;
-            utterance.rate = 0.9; // Poetic
+            utterance.rate = 0.9;
         } else if (currentPersona === 'victorian_critic') {
             utterance.pitch = 0.8;
-            utterance.rate = 1.0; // Stern/Serious
+            utterance.rate = 1.0;
         } else {
             utterance.pitch = 1.0;
             utterance.rate = 1.0;
@@ -98,12 +92,10 @@ function ChatContent() {
         window.speechSynthesis.speak(utterance);
     };
 
-    // Auto-scroll
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
+    }, [messages, debateMessages, isTyping]);
 
-    // Auto-Speak Watcher
     useEffect(() => {
         const lastMsg = messages[messages.length - 1];
         if (isSpeaking && lastMsg && lastMsg.role === 'assistant') {
@@ -111,11 +103,8 @@ function ChatContent() {
         }
     }, [messages, isSpeaking, persona, mode]);
 
-    // Initial Greeting
     useEffect(() => {
-        // Prevent resetting if messages already exist (Fix for re-render bug)
         if (messages.length > 0) return;
-
         let greeting = "";
         if (mode === 'subject') {
             greeting = `(A voice echoes from within the frame of "${artworkTitle || 'the artwork'}") ... Who disturbs my eternal rest? Speak.`;
@@ -156,13 +145,9 @@ function ChatContent() {
             const data = await response.json();
             if (data.sessionId) setSessionId(data.sessionId);
 
-            // Clean up common AI artifacts
             let cleanReply = data.reply || "";
-
-            // Remove "undefined" from end
             cleanReply = cleanReply.replace(/undefined$/i, "").trim();
 
-            // Fix common truncated starts (AI sometimes drops first letter)
             const truncationFixes = [
                 { pattern: /^n this\b/i, replacement: "In this" },
                 { pattern: /^t is\b/i, replacement: "It is" },
@@ -189,17 +174,141 @@ function ChatContent() {
         ? `The Spirit of "${artworkTitle || 'Unknown'}"`
         : `Conversing with ${personaNames[persona]}`;
 
+    // STREAMING DEBATE LOGIC
+    const igniteDebate = async () => {
+        setIsDebating(true);
+        setIsLoading(true);
+        setDebateMessages([]);
+        setIsTyping(true);
+        setTypingSpeaker("lorenzo"); // First to speak
 
+        try {
+            console.log("Igniting streaming debate for:", artworkTitle);
+
+            const response = await fetch("http://localhost:8080/api/agent/debate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    artworkId: artworkId,
+                    artworkTitle: artworkTitle,
+                    artist: artworkArtist
+                })
+            });
+
+            if (!response.body) throw new Error("No response body");
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+
+            // Start of stream
+            setIsLoading(false);
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                const lines = chunk.split("\n");
+
+                for (const line of lines) {
+                    if (line.startsWith("data: ")) {
+                        try {
+                            const data = JSON.parse(line.slice(6));
+
+                            if (data.done) {
+                                setIsTyping(false);
+                                setTypingSpeaker(null);
+                                break;
+                            }
+
+                            if (data.speaker && data.text) {
+                                // Important: Set current typing to false to show message
+                                setIsTyping(false);
+                                setDebateMessages(prev => [...prev, data]);
+
+                                // Prepare typing indicator for next speaker
+                                const nextSpeaker = data.speaker === "lorenzo" ? "edmund" : "lorenzo";
+                                setTypingSpeaker(nextSpeaker);
+                                setIsTyping(true);
+                            }
+                        } catch (e) {
+                            console.warn("Failed to parse SSE data:", e);
+                        }
+                    }
+                }
+            }
+
+        } catch (error) {
+            console.error(error);
+            setIsDebating(false);
+            setIsLoading(false);
+            setIsTyping(false);
+        }
+    };
+
+    if (isDebating) {
+        return (
+            <div className="chat-container h-screen flex flex-col relative overflow-hidden bg-black">
+                <header className="chat-header flex items-center justify-between px-6 py-4 relative z-10 border-b border-white/10 bg-black/40 backdrop-blur-md">
+                    <button onClick={() => setIsDebating(false)} className="text-white hover:text-red-500">
+                        EXIT CHAOS
+                    </button>
+                    <h1 className="text-xl font-serif text-white tracking-widest">SPECTRAL CONFLICT</h1>
+                    <div className="w-8"></div>
+                </header>
+
+                <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-white/20">
+                    {debateMessages.map((msg, i) => (
+                        <div
+                            key={i}
+                            className={`flex ${msg.speaker === 'lorenzo' ? 'justify-start' : 'justify-end'}`}
+                        >
+                            <div className={`max-w-[80%] p-4 rounded-lg animate-fade-in ${msg.speaker === 'lorenzo'
+                                ? 'bg-amber-900/30 border border-amber-500/30 text-amber-200'
+                                : 'bg-red-900/30 border border-red-500/30 text-red-200'
+                                }`}>
+                                <div className="text-xs uppercase tracking-wider mb-2 opacity-70 flex items-center gap-2">
+                                    {msg.speaker === 'lorenzo' ? 'LORENZO' : 'EDMUND'}
+                                    {/* <span className="text-[10px] opacity-50 px-1 border border-white/20 rounded">AI AGENT</span> */}
+                                </div>
+                                <p className="font-serif leading-relaxed text-sm whitespace-pre-wrap">{msg.text}</p>
+                            </div>
+                        </div>
+                    ))}
+
+                    {/* TYPING INDICATOR */}
+                    {isTyping && (
+                        <div className={`flex ${typingSpeaker === 'lorenzo' ? 'justify-start' : 'justify-end'} animate-pulse`}>
+                            <div className={`px-4 py-2 rounded-lg text-xs tracking-wider flex items-center gap-2 ${typingSpeaker === 'lorenzo' ? 'text-amber-400 bg-amber-900/20' : 'text-red-400 bg-red-900/20'
+                                }`}>
+                                <span className="w-1.5 h-1.5 rounded-full bg-current animate-bounce"></span>
+                                <span className="w-1.5 h-1.5 rounded-full bg-current animate-bounce delay-100"></span>
+                                <span className="w-1.5 h-1.5 rounded-full bg-current animate-bounce delay-200"></span>
+                                {typingSpeaker === 'lorenzo' ? 'Lorenzo is composing...' : 'Edmund is judging...'}
+                            </div>
+                        </div>
+                    )}
+
+                    {isLoading && (
+                        <div className="flex justify-center mt-20">
+                            <p className="text-white/40 animate-pulse font-serif tracking-widest text-sm">SUMMONING AGENTS...</p>
+                        </div>
+                    )}
+                    <div ref={messagesEndRef} />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="chat-container h-screen flex flex-col relative overflow-hidden bg-black">
             <div className="hero-background absolute inset-0 z-0" aria-hidden="true" />
             <div className="hero-overlay absolute inset-0 z-0" aria-hidden="true" />
 
-            {/* Header */}
             <header className="chat-header flex items-center justify-between px-6 py-4 relative z-10 border-b border-white/10 bg-black/40 backdrop-blur-md">
                 <div className="flex items-center gap-4">
-                    {/* Explicitly Cancel Audio on Back Click */}
                     <Link
                         href={artworkId ? `/artwork/${artworkId}?vibe=${persona}` : "/select"}
                         className="back-link text-white/70 hover:text-white transition-colors"
@@ -221,23 +330,33 @@ function ChatContent() {
                     </div>
                 </div>
 
-                {/* Audio Toggle */}
-                <button
-                    onClick={() => {
-                        const newSpeakingState = !isSpeaking;
-                        setIsSpeaking(newSpeakingState);
-                        if (!newSpeakingState && typeof window !== 'undefined') {
-                            window.speechSynthesis.cancel(); // Immediate silence if toggled off
-                        }
-                    }}
-                    className={`p-3 rounded-full border transition-all ${isSpeaking ? 'bg-primary/20 border-primary text-primary shadow-[0_0_15px_rgba(100,200,255,0.3)]' : 'border-secondary/30 text-secondary hover:bg-secondary/10'}`}
-                    title={isSpeaking ? "Mute Spirits" : "Summon Voice"}
-                >
-                    {isSpeaking ? "MUTE" : "SPEAK"}
-                </button>
+                <div className="flex items-center gap-3">
+                    {mode !== 'subject' && artworkTitle && (
+                        <button
+                            onClick={igniteDebate}
+                            className="px-4 py-1 text-xs border border-red-500/50 text-red-400 hover:bg-red-900/20 rounded uppercase tracking-wider transition-all hover:scale-105 active:scale-95"
+                            title="Make agents fight"
+                        >
+                            ⚔️ Debate
+                        </button>
+                    )}
+
+                    <button
+                        onClick={() => {
+                            const newSpeakingState = !isSpeaking;
+                            setIsSpeaking(newSpeakingState);
+                            if (!newSpeakingState && typeof window !== 'undefined') {
+                                window.speechSynthesis.cancel();
+                            }
+                        }}
+                        className={`p-3 rounded-full border transition-all ${isSpeaking ? 'bg-primary/20 border-primary text-primary shadow-[0_0_15px_rgba(100,200,255,0.3)]' : 'border-secondary/30 text-secondary hover:bg-secondary/10'}`}
+                        title={isSpeaking ? "Mute Spirits" : "Summon Voice"}
+                    >
+                        {isSpeaking ? "MUTE" : "SPEAK"}
+                    </button>
+                </div>
             </header>
 
-            {/* Messages */}
             <div className="messages-container flex-1 overflow-y-auto p-4 space-y-4 relative z-10 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
                 {messages.map((msg, i) => (
                     <div key={i} className={`message flex gap-3 max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : "mr-auto"}`}>
@@ -245,7 +364,7 @@ function ChatContent() {
                             <button
                                 onClick={() => {
                                     speakText(msg.content, persona, mode);
-                                    setIsSpeaking(true); // Enable auto-speak
+                                    setIsSpeaking(true);
                                 }}
                                 className="message-avatar text-2xl hover:scale-110 transition-transform cursor-pointer self-start mt-1"
                                 title="Replay Voice"
@@ -273,7 +392,6 @@ function ChatContent() {
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* Input */}
             <form onSubmit={sendMessage} className="chat-input-form p-4 bg-black/80 border-t border-white/10 relative z-10 flex gap-3 backdrop-blur-md">
                 <input
                     type="text"

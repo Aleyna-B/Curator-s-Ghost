@@ -872,3 +872,80 @@ body {
   /* Can be kept or removed if unused */
   overflow: hidden;
 }
+
+/* ===========================================
+   DEBATE MODE STYLES
+   =========================================== */
+.debate-container {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  position: relative;
+}
+
+.debate-panel {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.debate-panel.lorenzo {
+  background: linear-gradient(135deg, rgba(30, 20, 10, 0.95), rgba(50, 40, 20, 0.95));
+  border-right: 1px solid var(--gold);
+}
+
+.debate-panel.edmund {
+  background: linear-gradient(135deg, rgba(20, 10, 10, 0.95), rgba(40, 20, 20, 0.95));
+  border-left: 1px solid #ff4444;
+}
+
+.debate-avatar {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.debate-message {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  max-width: 90%;
+  text-align: center;
+}
+
+.lorenzo .debate-message {
+  color: var(--gold);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  background: rgba(201, 162, 39, 0.1);
+}
+
+.edmund .debate-message {
+  color: #ffaaaa;
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  background: rgba(255, 100, 100, 0.1);
+}
+
+.vs-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #000;
+  color: #fff;
+  font-family: 'Cinzel', serif;
+  font-weight: bold;
+  font-size: 1.2rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--gold);
+  z-index: 50;
+  box-shadow: 0 0 20px rgba(201, 162, 39, 0.5);
+}
