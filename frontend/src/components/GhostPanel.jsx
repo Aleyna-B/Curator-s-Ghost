@@ -35,7 +35,6 @@ export default function GhostPanel({ critique, quickInsight, isLoading, error })
         <aside className="ghost-panel rounded-xl p-6 md:p-8 space-y-6">
             {/* Header */}
             <div className="text-center border-b border-ghost pb-4">
-                <div className="text-3xl mb-2">👻</div>
                 <h2 className="font-serif text-2xl font-bold text-primary tracking-wide">
                     The Curator Speaks
                 </h2>

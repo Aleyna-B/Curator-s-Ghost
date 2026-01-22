@@ -1,8 +1,8 @@
-# The Curator's Ghost 👻
+# The Curator's Ghost 
 
 Explore famous artworks through the eyes of a ghostly curator. An atmospheric museum experience with AI-powered art critiques.
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Node.js 18+
@@ -25,7 +25,7 @@ Create `.env.local` in root directory:
 IOINTELLIGENCE_API_KEY=your_api_key_here
 ```
 
-**1️⃣ Start Backend (Terminal 1)**
+**1️ Start Backend (Terminal 1)**
 ```bash
 cd backend
 npm install
@@ -46,14 +46,14 @@ Frontend will run on: `http://localhost:3000`
 http://localhost:3000
 ```
 
-## 🎨 Features
+## Features
 
 - **Landing Page** - Atmospheric museum entrance with wax seal button
 - **Era Selection** - Choose between Renaissance, Impressionism, or Victorian Critic
 - **Gallery** - Browse artworks from the Met Museum API
 - **Ghost Critique** - AI-powered artwork commentary with typewriter effect
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Component | Technology |
 |-----------|------------|
@@ -62,7 +62,7 @@ http://localhost:3000
 | Art Data | Metropolitan Museum of Art API |
 | AI | IO Intelligence (Llama-3.3-70B) |
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Curator-s-Ghost/
@@ -91,7 +91,7 @@ Curator-s-Ghost/
 └── README.md
 ```
 
-## 🔗 API Endpoints
+## API Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -100,7 +100,7 @@ Curator-s-Ghost/
 | POST | `/api/critique` | Get ghost critique + spectral secrets |
 | POST | `/api/agent/chat` | Conversational AI with persona |
 
-## 🎭 AI Modes
+## AI Modes
 
 ### Curator Mode
 Interact with historical personas who critique and discuss artworks:
@@ -116,4 +116,4 @@ Interract through chatting or talking!
 
 ---
 
-Built for io.net hackathon 🏆
+Built for io.net hackathon. 

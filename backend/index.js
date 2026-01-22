@@ -18,9 +18,9 @@ if (process.env.IOINTELLIGENCE_API_KEY) {
         apiKey: process.env.IOINTELLIGENCE_API_KEY,
         baseURL: "https://api.intelligence.io.solutions/api/v1/",
     });
-    console.log('✅ IO Intelligence API configured');
+    console.log('IO Intelligence API configured');
 } else {
-    console.log('⚠️  No API key found - running in mock mode');
+    console.log('No API key found - running in mock mode');
 }
 
 registerMuseumRoutes(app);

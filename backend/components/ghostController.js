@@ -56,7 +56,7 @@ function registerGhostRoutes(app, client) {
 
             // Parse JSON
             const rawContent = response.choices[0].message.content;
-            console.log("🤖 Raw AI Response:", rawContent);
+            console.log("Raw AI Response:", rawContent);
 
             let aiData;
             try {
@@ -67,7 +67,7 @@ function registerGhostRoutes(app, client) {
                 return res.json(generateMockCritique(artwork)); // Fallback if JSON fails
             }
 
-            console.log("✅ Parsed AI Data:", aiData);
+            console.log("Parsed AI Data:", aiData);
             res.json(aiData);
 
         } catch (error) {
@@ -176,7 +176,7 @@ Stay fully in character and adapt your response accordingly.
             });
 
             const rawReply = response.choices[0].message.content;
-            console.log("👻 Raw AI Response:", rawReply);
+            console.log("Raw AI Response:", rawReply);
             const reply = (rawReply || "").trim();
 
             // Add assistant reply to history

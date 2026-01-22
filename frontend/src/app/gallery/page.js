@@ -53,11 +53,7 @@ function GalleryContent() {
         victorian_critic: "Victorian Era",
     };
 
-    const vibeEmojis = {
-        renaissance: "🎨",
-        impressionism: "🌻",
-        victorian_critic: "🕯️",
-    };
+
 
     return (
         <div className="min-h-screen px-4 py-12 md:py-16">
@@ -69,7 +65,7 @@ function GalleryContent() {
                 >
                     ← Back to Guides
                 </a>
-                <div className="text-4xl mb-4">{vibeEmojis[vibe] || "🖼️"}</div>
+
                 <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-2">
                     {vibeLabels[vibe] || "Gallery"}
                 </h1>
@@ -90,7 +86,7 @@ function GalleryContent() {
             {error && !isLoading && (
                 <div className="text-center mb-8 p-4 bg-ghost/20 rounded-lg max-w-md mx-auto">
                     <p className="text-secondary/70 text-sm italic">
-                        ✨ Demo mode: showing sample artworks
+                        Demo mode: showing sample artworks
                     </p>
                 </div>
             )}

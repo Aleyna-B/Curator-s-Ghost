@@ -29,11 +29,7 @@ function ChatContent() {
         victorian_critic: "Edmund"
     };
 
-    const personaEmojis = {
-        renaissance: "🎨",
-        impressionism: "🌻",
-        victorian_critic: "🕯️"
-    };
+
 
     // Load TTS Voices & Cleanup
     useEffect(() => {
@@ -193,7 +189,7 @@ function ChatContent() {
         ? `The Spirit of "${artworkTitle || 'Unknown'}"`
         : `Conversing with ${personaNames[persona]}`;
 
-    const headerEmoji = mode === 'subject' ? '👻' : personaEmojis[persona];
+
 
     return (
         <div className="chat-container h-screen flex flex-col relative overflow-hidden bg-black">
@@ -216,7 +212,6 @@ function ChatContent() {
                         ← Back
                     </Link>
                     <div className="chat-title flex items-center gap-3">
-                        <span className="text-3xl">{headerEmoji}</span>
                         <div>
                             <h1 className="font-serif text-xl text-cream">{headerTitle}</h1>
                             {artworkTitle && mode !== 'subject' && (
@@ -238,7 +233,7 @@ function ChatContent() {
                     className={`p-3 rounded-full border transition-all ${isSpeaking ? 'bg-primary/20 border-primary text-primary shadow-[0_0_15px_rgba(100,200,255,0.3)]' : 'border-secondary/30 text-secondary hover:bg-secondary/10'}`}
                     title={isSpeaking ? "Mute Spirits" : "Summon Voice"}
                 >
-                    {isSpeaking ? "🔊" : "🔇"}
+                    {isSpeaking ? "MUTE" : "SPEAK"}
                 </button>
             </header>
 
@@ -255,7 +250,7 @@ function ChatContent() {
                                 className="message-avatar text-2xl hover:scale-110 transition-transform cursor-pointer self-start mt-1"
                                 title="Replay Voice"
                             >
-                                {mode === 'subject' ? '👁️' : '👻'}
+                                ♦
                             </button>
                         )}
 
@@ -267,7 +262,7 @@ function ChatContent() {
 
                 {isLoading && (
                     <div className="message flex gap-3 mr-auto max-w-[85%]">
-                        <span className="message-avatar text-2xl self-start mt-1">👻</span>
+                        <span className="message-avatar text-2xl self-start mt-1">♦</span>
                         <div className="message-content p-4 rounded-xl bg-black/60 border border-secondary/30 backdrop-blur-sm flex items-center gap-1 h-12">
                             <span className="w-2 h-2 bg-cream/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
                             <span className="w-2 h-2 bg-cream/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
