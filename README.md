@@ -1,119 +1,117 @@
 # The Curator's Ghost 
 
-Explore famous artworks through the eyes of a ghostly curator. An atmospheric museum experience with AI-powered art critiques.
+**An immersive, AI-powered museum experience where artworks come alive.**
 
-## Quick Start
+Explore famous masterpieces not just by looking, but by conversing with the ghostly curators who haunt the gallery halls. Witness clash of opinions in real-time debates, or summon the spirits trapped within the canvas.
+
+Built for the **io.net Hackathon**, demonstrating advanced usage of **io.net Workflows**, **Custom Agents**, and **Real-Time Streaming**.
+
+---
+
+##  Key Features
+
+### 1. Ghost Strategy (Personas) 
+Choose your guide through art history:
+*   **Lorenzo (Renaissance):** A poetic scholar who sees divine beauty in every stroke.
+*   **Claude (Impressionist):** A dreamer obsessed with fleeting light and emotion.
+*   **Edmund (Victorian Critic):** A stern judge who values technical mastery and moral virtue.
+
+### 2. Debate Mode (The Clash) 
+**Real-Time AI Debate powered by io.net Custom Agents.**
+*   Watch **Lorenzo** and **Edmund** argue over a masterpiece in real-time.
+*   **Sequential Reasoning:** 5-turn debate loop where agents respond to each other's points.
+*   **Streaming (SSE):** Experience the argument unfold instantly with Server-Sent Events, no waiting.
+*   **Visual Drama:** Dynamic "typing..." indicators and split-screen UI.
+
+### 3. Possessed Mode (Living Subject) 
+**Don't just talk *about* the art. Talk *to* it.**
+*   Switch modes to summon the entity painted in the canvas.
+*   The AI adopts the persona of the subject (e.g., the weary peasant, the proud noble) based on visual context.
+
+### 4. Spectral Secrets 🔍
+*   Ask the ghosts to reveal hidden details.
+*   Hotspots generate dynamically on the image, revealing technical or historical secrets.
+
+---
+
+##  Tech Stack & Architecture
+
+### Backend (Node.js + Express)
+*   **Clean Architecture:** Logic separated into Controllers, Services (`debateService.js`), and Utils.
+*   **io.net Integration:** Uses `inference.io` Workflows API for complex agent tasks.
+*   **Custom Agents:** Configured with specific objectives (`type: "custom"`) for distinct personalities.
+*   **SSE Streaming:** Custom implementation for delivering real-time text chunks (`utils/sseHelper.js`).
+
+### Frontend (Next.js 14 + React)
+*   **Custom Hooks:** Logic encapsulated in `useDebateStream`, `useGhostTTS`.
+*   **Tailwind CSS:** Glassmorphism UI, dark mode aesthetics, smooth animations.
+*   **Speech Synthesis:** Web Speech API for bringing the ghosts to voice.
+
+### AI Engine
+*   **Primary:** io.net Workflows (Custom Agents).
+*   **Model:** `meta-llama/Llama-3.3-70B-Instruct`.
+*   **Fallback:** Robust error handling ensures the show goes on even if the main API hiccups.
+
+---
+
+##  Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- npm
+*   Node.js 18+
+*   An **io.net** API Key (for the full experience)
 
-### Installation
-
+### 1. Clone & Install
 ```bash
-# Clone the repository
 git clone https://github.com/Aleyna-B/Curator-s-Ghost.git
 cd Curator-s-Ghost
 ```
 
-### Running the Application
-
-## 📝 Environment Variables
-
-Create `.env.local` in root directory:
-```
-IOINTELLIGENCE_API_KEY=your_api_key_here
+### 2. Configure Environment
+Create a `.env.local` file in the root directory:
+```env
+IOINTELLIGENCE_API_KEY=your_ionet_api_key_here
 ```
 
-**1️ Start Backend (Terminal 1)**
+### 3. Run the Backend
 ```bash
 cd backend
 npm install
+# Starts server on http://localhost:8080
 node index.js
 ```
-Backend will run on: `http://localhost:8080`
 
-**2️⃣ Start Frontend (Terminal 2)**
+### 4. Run the Frontend
+Open a new terminal:
 ```bash
 cd frontend
 npm install
+# Starts app on http://localhost:3000
 npm run dev
 ```
-Frontend will run on: `http://localhost:3000`
 
-**3️⃣ Open in Browser**
-```
-http://localhost:3000
-```
+### 5. Open Project
+Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Features
+---
 
-- **Landing Page** - Atmospheric museum entrance with wax seal button
-- **Era Selection** - Choose between Renaissance, Impressionism, or Victorian Critic
-- **Gallery** - Browse artworks from the Met Museum API
-- **Ghost Critique** - AI-powered artwork commentary with typewriter effect
-
-## Tech Stack
-
-| Component | Technology |
-|-----------|------------|
-| Frontend | Next.js 14, Tailwind CSS |
-| Backend | Node.js, Express |
-| Art Data | Metropolitan Museum of Art API |
-| AI | IO Intelligence (Llama-3.3-70B) |
-
-## Project Structure
+##  Project Structure
 
 ```
 Curator-s-Ghost/
 ├── backend/
-│   ├── index.js                    # Server entry point
-│   ├── config/
-│   │   └── corsConfig.js           # CORS middleware
-│   ├── components/
-│   │   ├── ghostController.js      # AI & critique routes
-│   │   ├── museumController.js     # Met Museum API integration
-│   │   ├── orchestraAgent.js       # Intent planning agent
-│   │   └── personaPrompts.js       # Character personas & instructions
-│   │   └── jsonParser.js           # JSON extraction & cleanup
-│   └── package.json
+│   ├── components/         # Route Controllers (ghostController, museumController)
+│   ├── services/           # Business Logic (debateService.js - The Brain )
+│   ├── utils/              # Helpers (sseHelper.js - The Stream )
+│   └── index.js            # Entry Point
+│
 ├── frontend/
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── page.js             # Landing page
-│   │   │   ├── select/             # Era selection
-│   │   │   ├── gallery/            # Browse artworks
-│   │   │   ├── artwork/[id]/       # Artwork detail + critique
-│   │   │   └── chat/               # Chat with curator/spirit
-│   │   └── components/             # Reusable React components
-│   ├── public/                     # Static assets
-│   └── package.json
-└── README.md
+│   ├── src/app/chat/       # Main Chat Interface
+│   ├── src/hooks/          # Custom Hooks (useDebateStream, useGhostTTS)
+│   ├── src/components/     # UI Components (DebateArena, PossessedOverlay)
+│   └── public/             # Assets
 ```
 
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/artworks?vibe={vibe}` | Get artworks by era |
-| GET | `/api/artworks/:id` | Get single artwork details |
-| POST | `/api/critique` | Get ghost critique + spectral secrets |
-| POST | `/api/agent/chat` | Conversational AI with persona |
-
-## AI Modes
-
-### Curator Mode
-Interact with historical personas who critique and discuss artworks:
-- **Renaissance** (Lorenzo) - Poetic, scholarly perspective
-- **Impressionism** (Claude) - Dreamy, light-focused observations
-- **Victorian Critic** (Edmund) - Stern, technical analysis
-
-### Subject Mode
-Talk directly to the **spirit** of the artwork itself - immersive roleplay where the artwork becomes a character sharing its own story.
-
-### TTS Option
-Interract through chatting or talking!
-
----
-
-Built for io.net hackathon. 
+##  Hackathon Highlights
+*   **Creative use of AI:** Moving beyond simple Q&A to multi-turn, persona-based debating.
+*   **Technical Implementation:** Integrating io.net Custom Agents with real-time frontend streaming.
+*   **User Experience:** Polished, atmospheric UI that feels like a game.
