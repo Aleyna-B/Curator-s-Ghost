@@ -60,7 +60,7 @@ function GalleryContent() {
             {/* Header */}
             <header className="text-center mb-12">
                 <a
-                    href="/"
+                    href="/select"
                     className="inline-block text-secondary hover:text-primary transition-colors mb-4"
                 >
                     ← Back to Guides
