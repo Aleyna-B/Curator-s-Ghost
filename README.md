@@ -4,11 +4,11 @@
 
 Explore famous masterpieces not just by looking, but by conversing with the ghostly curators who haunt the gallery halls. Witness clash of opinions in real-time debates, or summon the spirits trapped within the canvas.
 
-Built for the **io.net Hackathon**, demonstrating advanced usage of **io.net Workflows**, **Custom Agents**, and **Real-Time Streaming**.
+Built for the **io.net Hackathon**, demonstrating advanced usage of **io.net Workflows**, **Custom Agents**, and **Reasoning Agents**.
 
 ---
 
-##  Key Features
+## Key Features
 
 ### 1. Ghost Strategy (Personas) 
 Choose your guide through art history:
@@ -28,18 +28,18 @@ Choose your guide through art history:
 *   Switch modes to summon the entity painted in the canvas.
 *   The AI adopts the persona of the subject (e.g., the weary peasant, the proud noble) based on visual context.
 
-### 4. Spectral Secrets 🔍
+### 4. Spectral Secrets 
 *   Ask the ghosts to reveal hidden details.
 *   Hotspots generate dynamically on the image, revealing technical or historical secrets.
 
 ---
 
-##  Tech Stack & Architecture
+## Tech Stack & Architecture
 
 ### Backend (Node.js + Express)
 *   **Clean Architecture:** Logic separated into Controllers, Services (`debateService.js`), and Utils.
+*   **Orchestration:** `orchestraAgent.js` utilizes **Reasoning Agents** to determine user intent (e.g., classifying questions as historical, critique, or technical).
 *   **io.net Integration:** Uses `inference.io` Workflows API for complex agent tasks.
-*   **Custom Agents:** Configured with specific objectives (`type: "custom"`) for distinct personalities.
 *   **SSE Streaming:** Custom implementation for delivering real-time text chunks (`utils/sseHelper.js`).
 
 ### Frontend (Next.js 14 + React)
@@ -48,13 +48,14 @@ Choose your guide through art history:
 *   **Speech Synthesis:** Web Speech API for bringing the ghosts to voice.
 
 ### AI Engine
-*   **Primary:** io.net Workflows (Custom Agents).
-*   **Model:** `meta-llama/Llama-3.3-70B-Instruct`.
+*   **Custom Agents:** distinct personalities (Lorenzo, Edmund, Subject) configured via prompts.
+*   **Reasoning Agent:** Uses `solve_with_reasoning` to break down complex user queries.
+*   **Model:** `meta-llama/Llama-3.3-70B-Instruct` as the core intelligence.
 *   **Fallback:** Robust error handling ensures the show goes on even if the main API hiccups.
 
 ---
 
-##  Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
 *   Node.js 18+
@@ -94,14 +95,14 @@ Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-##  Project Structure
+## Project Structure
 
 ```
 Curator-s-Ghost/
 ├── backend/
-│   ├── components/         # Route Controllers (ghostController, museumController)
+│   ├── components/         # Route Controllers & Agents (ghostController, orchestraAgent)
 │   ├── services/           # Business Logic (debateService.js - The Brain )
-│   ├── utils/              # Helpers (sseHelper.js - The Stream )
+│   ├── utils/              # Helpers (sseHelper.js - The Stream)
 │   └── index.js            # Entry Point
 │
 ├── frontend/
@@ -111,7 +112,14 @@ Curator-s-Ghost/
 │   └── public/             # Assets
 ```
 
-##  Hackathon Highlights
-*   **Creative use of AI:** Moving beyond simple Q&A to multi-turn, persona-based debating.
-*   **Technical Implementation:** Integrating io.net Custom Agents with real-time frontend streaming.
+## Hackathon Highlights
+*   **Creative use of AI:** Moving beyond simple Q&A to multi-turn, persona-based debating and roleplay.
+*   **Advanced Agents:** Combining **Custom Agents** for personality with **Reasoning Agents** for logic.
+*   **Technical Implementation:** Integrating io.net Workflows with real-time frontend streaming.
 *   **User Experience:** Polished, atmospheric UI that feels like a game.
+
+
+## Team
+
+*   **Aleyna Benzer** - [GitHub](https://github.com/Aleyna-B)   
+*   **Reyyan Temel** - [Github](https://github.com/ryntml)
