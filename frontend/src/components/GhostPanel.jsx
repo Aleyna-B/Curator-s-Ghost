@@ -20,7 +20,7 @@ export default function GhostPanel({ critique, quickInsight, isLoading, error })
         let index = 0;
         const intervalId = setInterval(() => {
             if (index < critique.length) {
-                setDisplayedText(prev => prev + critique[index]);
+                setDisplayedText(prev => prev + critique.charAt(index));//use charAt
                 index++;
             } else {
                 setIsTyping(false);
@@ -57,7 +57,8 @@ export default function GhostPanel({ critique, quickInsight, isLoading, error })
                 ) : (
                     <div className="prose prose-invert max-w-none">
                         <p className={`text-foreground/90 text-lg leading-relaxed font-serif italic ${isTyping ? 'typewriter' : ''}`}>
-                            "{displayedText}"
+                            "{critique}"
+                            {/* not using the displayedText state here to avoid typewriter effect */}
                         </p>
                     </div>
                 )}
