@@ -23,7 +23,7 @@ Choose your guide through art history:
 *   **Streaming (SSE):** Experience the argument unfold instantly with Server-Sent Events, no waiting.
 *   **Visual Drama:** Dynamic "typing..." indicators and split-screen UI.
 
-### 3. Possessed Mode (Living Subject) 
+### 3. Living Subject Mode 
 **Don't just talk *about* the art. Talk *to* it.**
 *   Switch modes to summon the entity painted in the canvas.
 *   The AI adopts the persona of the subject (e.g., the weary peasant, the proud noble) based on visual context.
@@ -108,7 +108,7 @@ Curator-s-Ghost/
 ├── frontend/
 │   ├── src/app/chat/       # Main Chat Interface
 │   ├── src/hooks/          # Custom Hooks (useDebateStream, useGhostTTS)
-│   ├── src/components/     # UI Components (DebateArena, PossessedOverlay)
+│   ├── src/components/     # UI Components (DebateArena)
 │   └── public/             # Assets
 ```
 
