@@ -4,32 +4,7 @@ import { useState, useEffect } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 
 export default function GhostPanel({ critique, quickInsight, isLoading, error }) {
-    const [displayedText, setDisplayedText] = useState("");
-    const [isTyping, setIsTyping] = useState(false);
 
-    // Typewriter effect
-    useEffect(() => {
-        if (!critique || isLoading) {
-            setDisplayedText("");
-            return;
-        }
-
-        setIsTyping(true);
-        setDisplayedText("");
-
-        let index = 0;
-        const intervalId = setInterval(() => {
-            if (index < critique.length) {
-                setDisplayedText(prev => prev + critique.charAt(index));//use charAt
-                index++;
-            } else {
-                setIsTyping(false);
-                clearInterval(intervalId);
-            }
-        }, 30);
-
-        return () => clearInterval(intervalId);
-    }, [critique, isLoading]);
 
     return (
         <aside className="ghost-panel rounded-xl p-6 md:p-8 space-y-6">
@@ -56,9 +31,8 @@ export default function GhostPanel({ critique, quickInsight, isLoading, error })
                     </div>
                 ) : (
                     <div className="prose prose-invert max-w-none">
-                        <p className={`text-foreground/90 text-lg leading-relaxed font-serif italic ${isTyping ? 'typewriter' : ''}`}>
+                        <p className="text-foreground/90 text-lg leading-relaxed font-serif italic">
                             "{critique}"
-                            {/* not using the displayedText state here to avoid typewriter effect */}
                         </p>
                     </div>
                 )}

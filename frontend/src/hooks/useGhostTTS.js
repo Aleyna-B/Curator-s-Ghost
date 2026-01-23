@@ -40,14 +40,8 @@ export function useGhostTTS() {
             || voices.find(v => v.name.includes("Male"))
             || voices[0];
 
-        // Trigger words logic
-        const triggerWords = ["death", "blood", "darkness", "eternal", "spirit", "doom", "curse", "shadow", "fear", "void", "grave", "mourn", "died", "kill", "ghost", "haunt"];
-        const isPossessed = triggerWords.some(word => text.toLowerCase().includes(word));
 
-        if (isPossessed) {
-            utterance.pitch = 0.4;
-            utterance.rate = 0.8;
-        } else if (currentMode === 'subject') {
+        if (currentMode === 'subject') {
             utterance.pitch = 0.7;
             utterance.rate = 0.9;
         } else if (currentPersona === 'renaissance') {
