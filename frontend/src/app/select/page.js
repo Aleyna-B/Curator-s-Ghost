@@ -19,7 +19,7 @@ const vibes = [
     },
     {
         id: "victorian_critic",
-        title: "VICTORIAN CRITIC",
+        title: "VICTORIAN",
         line1: "Judgement passed through",
         line2: "gaslight and fog.",
         image: "/victorian.png",
