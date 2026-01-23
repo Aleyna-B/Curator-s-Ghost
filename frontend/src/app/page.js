@@ -21,11 +21,6 @@ export default function HomePage() {
       {/* Mist Effect */}
       <div className="hero-mist" aria-hidden="true" />
 
-      {/* Login Button - Top Right */}
-      <a href="#" className="login-link">
-        Log in
-      </a>
-
       {/* Main Content */}
       <div className="hero-content">
         {/* Main Title - Stone/Metallic Texture */}
