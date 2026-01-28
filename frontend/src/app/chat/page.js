@@ -107,20 +107,6 @@ function ChatContent() {
             let cleanReply = data.reply || "";
             cleanReply = cleanReply.replace(/undefined$/i, "").trim();
 
-            const truncationFixes = [
-                { pattern: /^n this\b/i, replacement: "In this" },
-                { pattern: /^t is\b/i, replacement: "It is" },
-                { pattern: /^he /i, replacement: "The " },
-                { pattern: /^his /i, replacement: "This " },
-            ];
-
-            for (const fix of truncationFixes) {
-                if (fix.pattern.test(cleanReply)) {
-                    cleanReply = cleanReply.replace(fix.pattern, fix.replacement);
-                    break;
-                }
-            }
-
             setMessages(prev => [...prev, { role: "assistant", content: cleanReply }]);
         } catch (error) {
             setMessages(prev => [...prev, { role: "assistant", content: "The spirits are disturbed... Please try again." }]);
@@ -214,7 +200,7 @@ function ChatContent() {
                             </button>
                         )}
 
-                        <div className={`message-content p-4 rounded-xl ${msg.role === "user" ? "bg-primary/20 text-cream" : "bg-black/60 border border-secondary/30 text-cream/90 backdrop-blur-sm"}`}>
+                        <div className={`message-content p-4 rounded-xl ${msg.role === "user" ? "bg-primary/20 text-cream border border-primary/30 backdrop-blur-sm" : "bg-black/60 border border-secondary/30 text-cream/90 backdrop-blur-sm"}`}>
                             <p>{msg.content}</p>
                         </div>
                     </div>
