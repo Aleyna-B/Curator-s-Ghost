@@ -140,15 +140,15 @@ function registerGhostRoutes(app, client) {
             const response = await client.chat.completions.create({
                 model: "meta-llama/Llama-3.3-70B-Instruct",
                 messages: messages,
-                max_completion_tokens: 300
+                max_completion_tokens: 400
             });
 
             const reply = (response.choices[0].message.content || "").trim();
             history.push({ role: "assistant", content: reply });
             if (history.length > 20) history.splice(0, history.length - 20);
-
+            
             res.json({ reply, sessionId: convKey });
-
+            console.log(`Ghost Agent Reply [${convKey}]:`, reply);
         } catch (error) {
             console.error("Ghost Agent error:", error);
             res.status(500).json({ error: "The ghost has retreated into the shadows..." });
